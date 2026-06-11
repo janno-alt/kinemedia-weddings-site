@@ -21,14 +21,12 @@ export function Footer() {
         </div>
 
         <FooterCol title="Studio">
-          <Link href="/#leistungen">Leistungen</Link>
-          <Link href="/pakete">Pakete</Link>
-          <Link href="/magazin">Magazin</Link>
+          <Link href="/#leistungen">Pakete</Link>
+          <Link href="/#faq">Häufige Fragen</Link>
         </FooterCol>
 
         <FooterCol title="Paare">
           <Link href="https://kunden.wedding-kinemedia.de" target="_blank">Film-Login ↗</Link>
-          <Link href="/portfolio">Referenzen</Link>
           <Link href="/kontakt">Kontakt</Link>
         </FooterCol>
 

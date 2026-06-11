@@ -28,7 +28,7 @@ const faqs: FaqItem[] = [
   },
   {
     q: "Wie lange dauert die Lieferung?",
-    a: "3–4 Wochen ab Hochzeit. Das ist deutlich schneller als der Branchen-Standard von 8–12 Wochen. Möglich, weil ich als Solo-Filmer keine Edit-Warteschlangen habe und direkt nach der Hochzeit mit dem Schnitt starte.",
+    a: "3 bis 4 Wochen ab Hochzeit. Das ist deutlich schneller als der Branchen-Standard von 8 bis 12 Wochen. Möglich, weil ich keine Edit-Warteschlangen habe und direkt nach der Hochzeit mit dem Schnitt starte.",
   },
   {
     q: "Filmst du auch außerhalb von Sachsen-Anhalt?",

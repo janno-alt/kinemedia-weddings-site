@@ -14,7 +14,7 @@ const generic1 = {
 };
 
 const us = {
-  title: ["Solo-Filmer.", "Ein Stil, ein Versprechen."],
+  title: ["Ein Filmer.", "Ein Stil, ein Versprechen."],
   points: [
     "Ein Filmer, eine klare Bildsprache",
     "Cinematisch dokumentarisch",
@@ -52,7 +52,7 @@ export function WarumUns() {
         transition={{ duration: 0.9, ease }}
         className="text-center font-serif font-light text-[clamp(36px,5vw,56px)] tracking-tight mb-12"
       >
-        Warum <em className="italic-accent">Solo?</em>
+        Warum <em className="italic-accent">Kinemedia?</em>
       </motion.h2>
 
       <div className="stage-grid">

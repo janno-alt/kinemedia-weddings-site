@@ -1,11 +1,15 @@
 import Link from "next/link";
 
-const navLinks = [
-  { href: "/#leistungen", label: "Leistungen" },
-  { href: "/portfolio", label: "Portfolio" },
-  { href: "/ueber-mich", label: "Über mich" },
-  { href: "/magazin", label: "Magazin" },
-];
+/**
+ * Top-Navigation. Die Menüpunkte (Leistungen, Portfolio, Über mich, Magazin)
+ * sind vorerst ausgeblendet, bis die Subpages existieren — siehe navLinks.
+ */
+// const navLinks = [
+//   { href: "/#leistungen", label: "Leistungen" },
+//   { href: "/portfolio", label: "Portfolio" },
+//   { href: "/ueber-mich", label: "Über mich" },
+//   { href: "/magazin", label: "Magazin" },
+// ];
 
 export function TopNav() {
   return (
@@ -21,24 +25,8 @@ export function TopNav() {
           </div>
         </Link>
 
-        <div className="hidden md:flex items-center gap-8 lg:gap-9 text-[14px] text-white/75">
-          {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} className="hover:text-paper transition">
-              {link.label}
-            </Link>
-          ))}
-        </div>
-
-        <Link href="/kontakt" className="btn btn-glass shrink-0 text-[13px] hidden sm:inline-flex">
+        <Link href="/kontakt" className="btn btn-glass shrink-0 text-[13px]">
           Termin anfragen →
-        </Link>
-
-        <Link
-          href="/kontakt"
-          aria-label="Termin anfragen"
-          className="sm:hidden btn btn-glass shrink-0 px-3 py-2"
-        >
-          →
         </Link>
       </div>
     </nav>
