@@ -1,0 +1,35 @@
+node_modules
+.next
+.env
+.env.local
+.env.production
+.env.development
+*.log
+.DS_Store
+
+# SQLite database & runtime
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+# Payload uploads (Live-Daten — niemals committen)
+media/*
+!media/.gitkeep
+
+# Payload generated types (regenerate via `pnpm generate:types`)
+payload-types.ts
+
+# Build artefacts
+dist
+build
+.turbo
+.vercel
+
+# IDE
+.vscode
+.idea
+
+# Misc
+*.tsbuildinfo
+next-env.d.ts
