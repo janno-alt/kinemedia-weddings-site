@@ -58,7 +58,7 @@ export function WarumUns() {
       <div className="stage-grid">
         {/* Links — slidet von links */}
         <motion.aside
-          initial={reduced ? false : { opacity: 0, x: -60 }}
+          initial={reduced ? false : { opacity: 0, x: -40 }}
           whileInView={reduced ? undefined : { opacity: 1, x: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.9, delay: 0.1, ease }}
@@ -129,7 +129,7 @@ export function WarumUns() {
 
         {/* Rechts — slidet von rechts */}
         <motion.aside
-          initial={reduced ? false : { opacity: 0, x: 60 }}
+          initial={reduced ? false : { opacity: 0, x: 40 }}
           whileInView={reduced ? undefined : { opacity: 1, x: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.9, delay: 0.25, ease }}

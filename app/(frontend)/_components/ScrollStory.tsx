@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 
 /**
@@ -15,6 +16,17 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 export function ScrollStory() {
   const { scrollYProgress } = useScroll();
   const reduced = useReducedMotion();
+  // Mobile: scroll-linked Repaints großer Gradient-Layer + blur sind auf
+  // iOS-GPUs unzuverlässig (Layer wird teils gar nicht gerendert). Dort
+  // rendern wir den statischen Hintergrund.
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+  useEffect(() => {
+    const mq = window.matchMedia("(pointer: coarse), (max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   // Layer 1 — Twilight (cool blue spotlights). Sehr stark am Anfang,
   // dimmt während Goldener Stunde, schimmert wieder am Schluss.
@@ -42,7 +54,7 @@ export function ScrollStory() {
   const cameraX = useTransform(scrollYProgress, [0, 1], ["0%", "8%"]);
   const cameraY = useTransform(scrollYProgress, [0, 1], ["0%", "-4%"]);
 
-  if (reduced) {
+  if (reduced || isMobile !== false) {
     return <div className="bg-layers" aria-hidden="true" />;
   }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useScroll,
@@ -88,17 +88,30 @@ const chapters: Chapter[] = [
  */
 export function ScrollVideoStory({
   src = "/videos/hintergrund-wedding.mp4",
-  pinHeight = "500vh",
-  poster,
+  mobileSrc = "/videos/hintergrund-wedding-mobile.mp4",
+  poster = "/videos/poster-wedding.jpg",
 }: {
   src?: string;
-  pinHeight?: string;
+  mobileSrc?: string;
   poster?: string;
 }) {
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroOverlayRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
+
+  // Mobile/Touch-Detection: auf Touch-Geräten ist currentTime-Scrubbing über
+  // ein nicht voll gebuffertes Video unzuverlässig (iOS zeigt schwarz).
+  // Dort spielt das Video stattdessen normal in Schleife; die Kapitel-Texte
+  // bleiben scroll-getrieben. null = noch nicht ermittelt (SSR).
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+  useEffect(() => {
+    const mq = window.matchMedia("(pointer: coarse), (max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -138,9 +151,10 @@ export function ScrollVideoStory({
     return unsub;
   }, [heroOpacity, reduced]);
 
-  // Video-Scrubbing — startet bei HERO_FADE_START, läuft bis Ende der Section
+  // Video-Scrubbing — startet bei HERO_FADE_START, läuft bis Ende der Section.
+  // Auf Mobile/Touch deaktiviert (dort läuft das Video als Autoplay-Loop).
   useEffect(() => {
-    if (reduced) return;
+    if (reduced || isMobile !== false) return;
     const video = videoRef.current;
     const section = sectionRef.current;
     if (!video || !section) return;
@@ -191,27 +205,44 @@ export function ScrollVideoStory({
       window.removeEventListener("resize", updateTarget);
       video.removeEventListener("loadedmetadata", onMeta);
     };
-  }, [reduced]);
+  }, [reduced, isMobile]);
+
+  // Mobile: Video als Autoplay-Loop starten, sobald die Detection greift.
+  // iOS verlangt einen expliziten play()-Call nach Quellen-Wechsel.
+  useEffect(() => {
+    if (!isMobile && !reduced) return;
+    const video = videoRef.current;
+    if (!video) return;
+    video.play().catch(() => {
+      /* Autoplay verweigert: Poster bleibt sichtbar, kein Fehler nötig */
+    });
+  }, [isMobile, reduced]);
+
+  // Desktop: hochauflösendes All-Keyframe-Video (Scrubbing).
+  // Mobile/Touch: leichte 960p-Variante, normal abgespielt.
+  const videoSrc = isMobile ? mobileSrc : src;
+  const playsNormally = (reduced ?? false) || isMobile === true;
 
   return (
     <section
       ref={sectionRef}
-      className="relative"
-      style={{ height: pinHeight }}
+      // Auf Mobile kürzere Pin-Strecke: weniger Daumen-Scrollen pro Akt
+      className="relative h-[350vh] md:h-[500vh]"
     >
       <div
-        className="sticky top-0 h-screen overflow-hidden"
+        className="sticky top-0 screen-h overflow-hidden"
         style={{ backgroundColor: "#0a1626" }}
       >
         <video
+          key={videoSrc /* Quelle wechseln erzwingt Reload */}
           ref={videoRef}
-          src={src}
+          src={videoSrc}
           poster={poster}
           muted
           playsInline
-          preload="auto"
-          autoPlay={reduced ?? false}
-          loop={reduced ?? false}
+          preload={isMobile ? "metadata" : "auto"}
+          autoPlay={playsNormally}
+          loop={playsNormally}
           className="absolute inset-0 w-full h-full object-cover"
         />
 
