@@ -68,10 +68,12 @@ export function ScrollStory() {
         }}
       />
 
-      {/* Camera-Wrapper — sanftes Drift aller Spot-Layer */}
+      {/* Camera-Wrapper — sanftes Drift aller Spot-Layer.
+          Größer als der Viewport (inset -12%), damit beim Verschieben um
+          bis zu 8% keine Layer-Kante am Rand sichtbar wird. */}
       <motion.div
-        className="absolute inset-0"
-        style={{ x: cameraX, y: cameraY }}
+        className="absolute"
+        style={{ inset: "-12%", x: cameraX, y: cameraY }}
       >
         {/* Layer 1: Twilight (cool blue spotlights) */}
         <motion.div

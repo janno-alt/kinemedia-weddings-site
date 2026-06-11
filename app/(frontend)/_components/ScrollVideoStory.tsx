@@ -100,10 +100,9 @@ export function ScrollVideoStory({
   const heroOverlayRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
 
-  // Mobile/Touch-Detection: auf Touch-Geräten ist currentTime-Scrubbing über
-  // ein nicht voll gebuffertes Video unzuverlässig (iOS zeigt schwarz).
-  // Dort spielt das Video stattdessen normal in Schleife; die Kapitel-Texte
-  // bleiben scroll-getrieben. null = noch nicht ermittelt (SSR).
+  // Mobile/Touch-Detection: bestimmt nur die Video-Quelle (leichte 960p-
+  // Variante statt 34-MB-Desktop-Datei). Gescrubbt wird auf allen Geräten.
+  // null = noch nicht ermittelt (SSR).
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
   useEffect(() => {
     const mq = window.matchMedia("(pointer: coarse), (max-width: 767px)");
@@ -112,6 +111,24 @@ export function ScrollVideoStory({
     mq.addEventListener("change", update);
     return () => mq.removeEventListener("change", update);
   }, []);
+
+  // iOS-Unlock: Safari erlaubt programmatische Frame-Kontrolle (currentTime)
+  // erst nach einer User-Geste. Erster Touch → play() + sofort pause()
+  // schaltet das Video frei, ohne dass es sichtbar abspielt.
+  useEffect(() => {
+    if (reduced) return;
+    const unlock = () => {
+      const video = videoRef.current;
+      if (!video) return;
+      video
+        .play()
+        .then(() => video.pause())
+        .catch(() => {});
+      window.removeEventListener("touchstart", unlock);
+    };
+    window.addEventListener("touchstart", unlock, { passive: true, once: true });
+    return () => window.removeEventListener("touchstart", unlock);
+  }, [reduced]);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -152,9 +169,9 @@ export function ScrollVideoStory({
   }, [heroOpacity, reduced]);
 
   // Video-Scrubbing — startet bei HERO_FADE_START, läuft bis Ende der Section.
-  // Auf Mobile/Touch deaktiviert (dort läuft das Video als Autoplay-Loop).
+  // Läuft auf allen Geräten; Mobile nutzt die leichte All-Keyframe-Variante.
   useEffect(() => {
-    if (reduced || isMobile !== false) return;
+    if (reduced || isMobile === null) return;
     const video = videoRef.current;
     const section = sectionRef.current;
     if (!video || !section) return;
@@ -207,21 +224,20 @@ export function ScrollVideoStory({
     };
   }, [reduced, isMobile]);
 
-  // Mobile: Video als Autoplay-Loop starten, sobald die Detection greift.
-  // iOS verlangt einen expliziten play()-Call nach Quellen-Wechsel.
+  // Bei reduced-motion: Video normal abspielen lassen (kein Scrubbing).
   useEffect(() => {
-    if (!isMobile && !reduced) return;
+    if (!reduced) return;
     const video = videoRef.current;
     if (!video) return;
     video.play().catch(() => {
       /* Autoplay verweigert: Poster bleibt sichtbar, kein Fehler nötig */
     });
-  }, [isMobile, reduced]);
+  }, [reduced]);
 
-  // Desktop: hochauflösendes All-Keyframe-Video (Scrubbing).
-  // Mobile/Touch: leichte 960p-Variante, normal abgespielt.
+  // Desktop: hochauflösendes 1080p-Video. Mobile: leichte 960p-Variante.
+  // Beide all-keyframe-encodiert, beide werden gescrubbt.
   const videoSrc = isMobile ? mobileSrc : src;
-  const playsNormally = (reduced ?? false) || isMobile === true;
+  const playsNormally = reduced ?? false;
 
   return (
     <section
@@ -240,7 +256,7 @@ export function ScrollVideoStory({
           poster={poster}
           muted
           playsInline
-          preload={isMobile ? "metadata" : "auto"}
+          preload="auto"
           autoPlay={playsNormally}
           loop={playsNormally}
           className="absolute inset-0 w-full h-full object-cover"

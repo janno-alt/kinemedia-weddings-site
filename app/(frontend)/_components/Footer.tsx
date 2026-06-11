@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function Footer() {
@@ -5,15 +6,13 @@ export function Footer() {
     <footer className="relative z-10 border-t border-white/8 mt-32 pt-16 pb-6 px-4 sm:px-8 text-white/55">
       <div className="mx-auto max-w-[1320px] grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-14 pb-10 border-b border-white/8">
         <div className="col-span-2 md:col-span-1">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="brand-mark">k</div>
-            <div className="font-serif text-[22px] leading-none text-paper">
-              Kinemedia
-              <small className="block text-[9px] tracking-[0.3em] uppercase text-white/50 mt-0.5">
-                Weddings
-              </small>
-            </div>
-          </div>
+          <Image
+            src="/images/logo-kinemedia-weddings.png"
+            alt="Kinemedia Weddings"
+            width={1983}
+            height={288}
+            className="h-9 w-auto"
+          />
           <p className="text-[13px] leading-relaxed mt-4 max-w-[32ch]">
             Cinematische Hochzeitsfilme aus einer Hand. Hochzeitsvideograf für
             Sachsen-Anhalt und Mitteldeutschland.
