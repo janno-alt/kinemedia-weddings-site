@@ -27,6 +27,12 @@ const HERO_FADE_END = 0.15;
 const ACT_OFFSET = HERO_FADE_END;
 const ACT_LENGTH = (1 - HERO_FADE_END) / 4;
 
+// Frame-Sequenz für Mobile-Scrubbing (Apple-Methode: Canvas statt Video,
+// weil iOS Safari currentTime-Seeks während des Touch-Scrolls verschluckt).
+const FRAME_COUNT = 121;
+const frameSrc = (i: number) =>
+  `/frames/frame-${String(i + 1).padStart(3, "0")}.webp`;
+
 const chapters: Chapter[] = [
   {
     eyebrow: "Hochzeitsfilm",
@@ -75,34 +81,28 @@ const chapters: Chapter[] = [
 ];
 
 /**
- * Hero + Scroll-Video-Story in einer pinned Section.
+ * Hero + 4-Akt-Scroll-Story in einer pinned Section.
  *
- * Beim Page-Load: Video startet (Frame 0 = Establishing Shot Altar) als
- * Hero-Hintergrund. Eyebrow + Headline + Subtitle + CTAs sind sofort sichtbar
- * als Overlay.
- *
- * Beim Scrollen:
- *   0..0.05 → Hero voll sichtbar, Video steht
- *   0.05..0.15 → Hero-Overlay fadet aus, Video startet zu scrubben
- *   0.15..1.00 → Video scrubbt durch die 4 Akte, Kapitel-Texte unten fade-in
+ * Desktop: <video> mit currentTime-Scrubbing (All-Keyframe-Encoding).
+ * Mobile/Touch: <canvas> mit JPEG/WebP-Frame-Sequenz — iOS Safari führt
+ *   Video-Seeks während Touch-Scroll unzuverlässig aus; Bilder zeichnen
+ *   funktioniert deterministisch auf jedem Gerät (auch im Stromsparmodus).
+ * prefers-reduced-motion: Video läuft als normales Autoplay-Loop.
  */
 export function ScrollVideoStory({
   src = "/videos/hintergrund-wedding.mp4",
-  mobileSrc = "/videos/hintergrund-wedding-mobile.mp4",
   poster = "/videos/poster-wedding.jpg",
 }: {
   src?: string;
-  mobileSrc?: string;
   poster?: string;
 }) {
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const heroOverlayRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
 
-  // Mobile/Touch-Detection: bestimmt nur die Video-Quelle (leichte 960p-
-  // Variante statt 34-MB-Desktop-Datei). Gescrubbt wird auf allen Geräten.
-  // null = noch nicht ermittelt (SSR).
+  // Mobile/Touch-Detection. null = noch nicht ermittelt (SSR).
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
   useEffect(() => {
     const mq = window.matchMedia("(pointer: coarse), (max-width: 767px)");
@@ -111,37 +111,6 @@ export function ScrollVideoStory({
     mq.addEventListener("change", update);
     return () => mq.removeEventListener("change", update);
   }, []);
-
-  // iOS-Unlock: Safari lädt Videos trotz preload="auto" erst nach einer
-  // User-Geste und erlaubt erst dann programmatische Frame-Kontrolle
-  // (currentTime). Erster Touch → play() + pause() schaltet beides frei.
-  //
-  // Wichtig: erst registrieren, wenn die Mobile-Detection fertig ist —
-  // der Quellen-Wechsel ersetzt das Video-Element (key-Change), ein
-  // vorher geunlocktes Element wäre verloren. Retry-fähig, falls play()
-  // beim ersten Versuch abgelehnt wird.
-  useEffect(() => {
-    if (reduced || isMobile === null) return;
-    let unlocked = false;
-    const unlock = () => {
-      if (unlocked) return;
-      const video = videoRef.current;
-      if (!video) return;
-      unlocked = true;
-      video
-        .play()
-        .then(() => video.pause())
-        .catch(() => {
-          unlocked = false; // nächster Touch versucht es erneut
-        });
-    };
-    window.addEventListener("touchstart", unlock, { passive: true });
-    window.addEventListener("touchend", unlock, { passive: true });
-    return () => {
-      window.removeEventListener("touchstart", unlock);
-      window.removeEventListener("touchend", unlock);
-    };
-  }, [reduced, isMobile]);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -162,8 +131,6 @@ export function ScrollVideoStory({
   });
 
   // Pointer-Events + Visibility nur aktiv solange das Overlay sichtbar ist.
-  // visibility:hidden + aria-hidden sorgt dafür, dass das Overlay weder klickbar
-  // noch screenreader-relevant noch durch Restwerte sichtbar ist.
   useEffect(() => {
     if (reduced) return;
     const el = heroOverlayRef.current;
@@ -181,10 +148,19 @@ export function ScrollVideoStory({
     return unsub;
   }, [heroOpacity, reduced]);
 
-  // Video-Scrubbing — startet bei HERO_FADE_START, läuft bis Ende der Section.
-  // Läuft auf allen Geräten; Mobile nutzt die leichte All-Keyframe-Variante.
+  // Scroll-Progress → Video-/Frame-Progress (0..1), startet bei HERO_FADE_START
+  const computeProgress = (section: HTMLElement) => {
+    const rect = section.getBoundingClientRect();
+    const scrollable = section.offsetHeight - window.innerHeight;
+    if (scrollable <= 0) return 0;
+    const scrolled = Math.max(0, Math.min(scrollable, -rect.top));
+    const raw = scrolled / scrollable;
+    return Math.max(0, Math.min(1, (raw - HERO_FADE_START) / (1 - HERO_FADE_START)));
+  };
+
+  // ── DESKTOP: Video-Scrubbing ────────────────────────────────────────────
   useEffect(() => {
-    if (reduced || isMobile === null) return;
+    if (reduced || isMobile !== false) return;
     const video = videoRef.current;
     const section = sectionRef.current;
     if (!video || !section) return;
@@ -194,17 +170,7 @@ export function ScrollVideoStory({
     let cachedDuration = 0;
 
     const updateTarget = () => {
-      const rect = section.getBoundingClientRect();
-      const scrollable = section.offsetHeight - window.innerHeight;
-      if (scrollable <= 0) return;
-      const scrolled = Math.max(0, Math.min(scrollable, -rect.top));
-      const rawProgress = scrolled / scrollable;
-      // Video soll erst ab HERO_FADE_START anfangen zu scrubben
-      const videoProgress = Math.max(
-        0,
-        Math.min(1, (rawProgress - HERO_FADE_START) / (1 - HERO_FADE_START)),
-      );
-      targetTime = videoProgress * (cachedDuration || video.duration || 0);
+      targetTime = computeProgress(section) * (cachedDuration || video.duration || 0);
     };
 
     const tick = () => {
@@ -237,20 +203,119 @@ export function ScrollVideoStory({
     };
   }, [reduced, isMobile]);
 
+  // ── MOBILE: Canvas-Frame-Sequenz ────────────────────────────────────────
+  useEffect(() => {
+    if (reduced || isMobile !== true) return;
+    const canvas = canvasRef.current;
+    const section = sectionRef.current;
+    if (!canvas || !section) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const frames: (HTMLImageElement | null)[] = Array(FRAME_COUNT).fill(null);
+    let disposed = false;
+    let lastDrawnIndex = -1;
+
+    const loadFrame = (i: number) =>
+      new Promise<void>((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          if (!disposed) frames[i] = img;
+          resolve();
+        };
+        img.onerror = () => resolve();
+        img.src = frameSrc(i);
+      });
+
+    // Bestmöglichen geladenen Frame ≤ index finden (sonst nächstgrößeren)
+    const bestFrame = (index: number): HTMLImageElement | null => {
+      for (let i = index; i >= 0; i--) if (frames[i]) return frames[i];
+      for (let i = index + 1; i < FRAME_COUNT; i++) if (frames[i]) return frames[i];
+      return null;
+    };
+
+    const draw = (force = false) => {
+      const progress = computeProgress(section);
+      const index = Math.min(
+        FRAME_COUNT - 1,
+        Math.round(progress * (FRAME_COUNT - 1)),
+      );
+      if (!force && index === lastDrawnIndex) return;
+      const img = bestFrame(index);
+      if (!img) return;
+      lastDrawnIndex = index;
+
+      // cover-crop: Canvas füllen, zentriert beschneiden
+      const cw = canvas.width;
+      const ch = canvas.height;
+      const iw = img.naturalWidth;
+      const ih = img.naturalHeight;
+      const scale = Math.max(cw / iw, ch / ih);
+      const dw = iw * scale;
+      const dh = ih * scale;
+      ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+    };
+
+    let rafId = 0;
+    let drawQueued = false;
+    const requestDraw = (force = false) => {
+      if (drawQueued) return;
+      drawQueued = true;
+      rafId = requestAnimationFrame(() => {
+        drawQueued = false;
+        draw(force);
+      });
+    };
+    const onScroll = () => requestDraw();
+
+    // Canvas auf Viewport-Größe (devicePixelRatio, gedeckelt für GPU-Schonung)
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(window.innerWidth * dpr);
+      canvas.height = Math.round(window.innerHeight * dpr);
+      requestDraw(true);
+    };
+
+    // Frames laden: erst grobes Raster (jeder 6.), dann der Rest —
+    // so ist früh über die ganze Strecke etwas Sinnvolles zeichenbar.
+    const coarse: number[] = [];
+    const fine: number[] = [];
+    for (let i = 0; i < FRAME_COUNT; i++) {
+      (i % 6 === 0 ? coarse : fine).push(i);
+    }
+    (async () => {
+      await Promise.all(coarse.map(loadFrame));
+      requestDraw(true);
+      await Promise.all(fine.map(loadFrame));
+      requestDraw(true);
+    })();
+
+    resize();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", resize);
+
+    return () => {
+      disposed = true;
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", resize);
+    };
+  }, [reduced, isMobile]);
+
   // Bei reduced-motion: Video normal abspielen lassen (kein Scrubbing).
   useEffect(() => {
     if (!reduced) return;
     const video = videoRef.current;
     if (!video) return;
     video.play().catch(() => {
-      /* Autoplay verweigert: Poster bleibt sichtbar, kein Fehler nötig */
+      /* Autoplay verweigert: Poster bleibt sichtbar */
     });
   }, [reduced]);
 
-  // Desktop: hochauflösendes 1080p-Video. Mobile: leichte 960p-Variante.
-  // Beide all-keyframe-encodiert, beide werden gescrubbt.
-  const videoSrc = isMobile ? mobileSrc : src;
   const playsNormally = reduced ?? false;
+  // Video rendern auf Desktop + reduced; Canvas nur auf Mobile ohne reduced.
+  const useCanvas = isMobile === true && !playsNormally;
 
   return (
     <section
@@ -262,21 +327,37 @@ export function ScrollVideoStory({
         className="sticky top-0 screen-h overflow-hidden"
         style={{ backgroundColor: "#0a1626" }}
       >
-        <video
-          key={videoSrc /* Quelle wechseln erzwingt Reload */}
-          ref={videoRef}
-          src={videoSrc}
-          poster={poster}
-          muted
-          playsInline
-          preload="auto"
-          autoPlay={playsNormally}
-          loop={playsNormally}
+        {/* Poster als unterste Schicht — sofort sichtbar, bevor
+            Video/Frames geladen sind */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={poster}
+          alt=""
+          aria-hidden="true"
           className="absolute inset-0 w-full h-full object-cover"
         />
 
-        {/* Base-Tint: leichter Marineblau-Schleier über dem ganzen Video, sorgt
-            für gleichmäßigen Look unabhängig vom Frame */}
+        {useCanvas ? (
+          <canvas
+            ref={canvasRef}
+            className="absolute inset-0 w-full h-full"
+            aria-hidden="true"
+          />
+        ) : (
+          <video
+            ref={videoRef}
+            src={src}
+            poster={poster}
+            muted
+            playsInline
+            preload="auto"
+            autoPlay={playsNormally}
+            loop={playsNormally}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
+
+        {/* Base-Tint: leichter Marineblau-Schleier über dem ganzen Video */}
         <div
           className="absolute inset-0"
           style={{ background: "rgba(10,22,38,0.18)" }}
