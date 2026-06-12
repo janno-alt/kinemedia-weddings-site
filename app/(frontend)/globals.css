@@ -317,25 +317,38 @@
 }
 
 /* === Paper section — heller Akzent-Block zwischen dunklen Sektionen ===
-   Top und Bottom haben einen ~140px Fade-Zone, damit es weich von dunkel
-   ins Weiße übergeht und wieder zurück (kein harter Cut). */
+   Top und Bottom faden über ~280px weich ein/aus. Die Stops folgen einer
+   Smoothstep-Kurve — ein linearer Verlauf hätte an Anfang und Ende
+   sichtbare Knicke (C1-Diskontinuität). */
 .paper-section {
   position: relative;
   color: var(--color-ink-900);
   isolation: isolate;
   background: linear-gradient(
     180deg,
-    transparent 0%,
-    #ffffff 140px,
-    #ffffff calc(100% - 140px),
-    transparent 100%
+    rgba(255, 255, 255, 0) 0px,
+    rgba(255, 255, 255, 0.03) 40px,
+    rgba(255, 255, 255, 0.1) 80px,
+    rgba(255, 255, 255, 0.24) 120px,
+    rgba(255, 255, 255, 0.45) 160px,
+    rgba(255, 255, 255, 0.68) 200px,
+    rgba(255, 255, 255, 0.88) 240px,
+    rgba(255, 255, 255, 1) 280px,
+    rgba(255, 255, 255, 1) calc(100% - 280px),
+    rgba(255, 255, 255, 0.88) calc(100% - 240px),
+    rgba(255, 255, 255, 0.68) calc(100% - 200px),
+    rgba(255, 255, 255, 0.45) calc(100% - 160px),
+    rgba(255, 255, 255, 0.24) calc(100% - 120px),
+    rgba(255, 255, 255, 0.1) calc(100% - 80px),
+    rgba(255, 255, 255, 0.03) calc(100% - 40px),
+    rgba(255, 255, 255, 0) 100%
   );
-  padding: 220px 0 240px;
+  padding: 260px 0 280px;
   margin: 80px 0 80px;
 }
 @media (min-width: 768px) {
   .paper-section {
-    padding: 260px 0 280px;
+    padding: 300px 0 320px;
   }
 }
 

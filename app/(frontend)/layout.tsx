@@ -8,11 +8,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:3000"),
   title: {
     default:
-      "Hochzeitsvideograf Sachsen-Anhalt · Cinematischer Hochzeitsfilm | Kinemedia",
+      "Hochzeitsvideograf Sachsen-Anhalt · Euer Hochzeitsfilm | Kinemedia",
     template: "%s · Kinemedia Weddings",
   },
   description:
-    "Cinematische Hochzeitsfilme aus einer Hand. Hochzeitsvideograf für Sachsen-Anhalt und Mitteldeutschland. Highlight-Film, 4K-Trauungsmitschnitt, Drohnenaufnahmen. Lieferung in 3 bis 4 Wochen.",
+    "Hochzeitsfilme für Sachsen-Anhalt und Mitteldeutschland. Highlight-Film, 4K-Trauungsmitschnitt, Drohnenaufnahmen. Lieferung in 3 bis 4 Wochen.",
   keywords: [
     "Hochzeitsvideograf Sachsen-Anhalt",
     "Hochzeitsfilm",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     "Hochzeitsfilmer Bitterfeld",
     "Hochzeitsvideograf Halle",
     "Hochzeitsfilmer Leipzig",
-    "cinematischer Hochzeitsfilm",
+    "Hochzeitsfilm Sachsen-Anhalt",
     "Highlight-Film Hochzeit",
     "4K Mitschnitt Trauung",
     "Drohnenaufnahmen Hochzeit",
@@ -31,15 +31,15 @@ export const metadata: Metadata = {
     type: "website",
     locale: "de_DE",
     siteName: "Kinemedia Weddings",
-    title: "Hochzeitsvideograf Sachsen-Anhalt · Cinematischer Hochzeitsfilm",
+    title: "Hochzeitsvideograf Sachsen-Anhalt · Euer Hochzeitsfilm",
     description:
-      "Cinematische Hochzeitsfilme aus einer Hand. Hochzeitsvideograf für Sachsen-Anhalt und Mitteldeutschland. Highlight-Reel, 4K-Trauung, 3 bis 4 Wochen Lieferzeit.",
+      "Hochzeitsfilme für Sachsen-Anhalt und Mitteldeutschland. Highlight-Film, 4K-Trauung, 3 bis 4 Wochen Lieferzeit.",
   },
   twitter: {
     card: "summary_large_image",
     title: "Hochzeitsvideograf Sachsen-Anhalt | Kinemedia Weddings",
     description:
-      "Cinematische Hochzeitsfilme aus einer Hand. Highlight-Reel, 4K-Trauung, 3–4 Wochen Lieferzeit.",
+      "Hochzeitsfilme für Sachsen-Anhalt und Mitteldeutschland. Highlight-Film, 4K-Trauung, 3 bis 4 Wochen Lieferzeit.",
   },
 };
 

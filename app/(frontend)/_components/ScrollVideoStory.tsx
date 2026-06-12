@@ -38,10 +38,10 @@ const chapters: Chapter[] = [
     eyebrow: "Hochzeitsfilm",
     headline: (
       <>
-        Ein Filmer. <em className="italic-accent">Eure Geschichte.</em>
+        Ein Film. <em className="italic-accent">Eure Geschichte.</em>
       </>
     ),
-    sub: "Hochzeitsvideograf für Sachsen-Anhalt und Mitteldeutschland. Von der Trauung bis zum letzten Tanz.",
+    sub: "Hochzeitsfilme für Sachsen-Anhalt und Mitteldeutschland. Von der Trauung bis zum letzten Tanz.",
     from: ACT_OFFSET,
     to: ACT_OFFSET + ACT_LENGTH,
   },
@@ -49,10 +49,10 @@ const chapters: Chapter[] = [
     eyebrow: "Stil",
     headline: (
       <>
-        Cinematisch <em className="italic-accent">dokumentarisch.</em>
+        Echte Momente. <em className="italic-accent">Kein Drehbuch.</em>
       </>
     ),
-    sub: "Editorial-Bildsprache mit Kino-Look. Ich filme, was passiert. Keine Posen nach Schema F.",
+    sub: "Ich filme euren Tag, wie er passiert. Keine Posen nach Schema F, keine gestellten Szenen.",
     from: ACT_OFFSET + ACT_LENGTH,
     to: ACT_OFFSET + 2 * ACT_LENGTH,
   },
@@ -397,7 +397,7 @@ export function ScrollVideoStory({
             className="font-serif font-light text-[clamp(48px,8vw,128px)] leading-[0.98] tracking-tight mt-6 sm:mt-8"
             style={{ textShadow: "0 4px 32px rgba(0,0,0,0.6)" }}
           >
-            Cinematische <em className="italic-accent">Hochzeitsfilme.</em>
+            Euer <em className="italic-accent">Hochzeitsfilm.</em>
             <br />
             Aus Sachsen-Anhalt.
           </h1>

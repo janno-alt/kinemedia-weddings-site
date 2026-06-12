@@ -14,8 +14,8 @@ export function Footer() {
             className="h-9 w-auto"
           />
           <p className="text-[13px] leading-relaxed mt-4 max-w-[32ch]">
-            Cinematische Hochzeitsfilme aus einer Hand. Hochzeitsvideograf für
-            Sachsen-Anhalt und Mitteldeutschland.
+            Hochzeitsfilme für Sachsen-Anhalt und Mitteldeutschland. Echte
+            Momente, ehrlich erzählt.
           </p>
         </div>
 

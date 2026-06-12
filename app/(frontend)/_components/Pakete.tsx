@@ -16,10 +16,10 @@ const packages: Package[] = [
   {
     num: "Paket 01",
     name: "Trauung",
-    hours: "3 Stunden Coverage",
+    hours: "4 Stunden Coverage",
     features: [
-      "Trauung und erste Stunde Empfang",
-      "Cinematic Highlight-Film",
+      "Trauung und Empfang",
+      "Highlight-Film",
       "4K-Mitschnitt der Trauung",
       "Online-Galerie dauerhaft verfügbar",
     ],
@@ -31,8 +31,9 @@ const packages: Package[] = [
     hours: "8 Stunden Coverage",
     features: [
       "Von Getting Ready bis erster Tanz",
-      "Cinematic Highlight-Film",
+      "Highlight-Film",
       "4K-Mitschnitt der Trauung",
+      "Reden in voller Länge",
       "Drohnenaufnahmen inklusive",
       "Online-Galerie dauerhaft verfügbar",
     ],
@@ -44,13 +45,15 @@ const packages: Package[] = [
     name: "Full Day",
     hours: "12 Stunden Coverage",
     features: [
-      "Komplette Hochzeit dokumentiert",
-      "Cinematic Highlight-Film",
-      "Zusätzlicher Long-Form-Schnitt",
+      "Komplette Hochzeit bis zur Party",
+      "Ausführlicher Highlight-Film",
+      "Long-Form-Film mit Reden und Trauung in voller Länge",
       "4K-Mitschnitt und Drohnenaufnahmen",
+      "Clip im Hochformat für Social Media",
       "Same-Day-Edit optional",
+      "Online-Galerie dauerhaft verfügbar",
     ],
-    netPrice: 3900,
+    netPrice: 3500,
   },
 ];
 

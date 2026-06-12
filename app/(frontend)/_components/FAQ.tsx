@@ -36,11 +36,11 @@ const faqs: FaqItem[] = [
   },
   {
     q: "Was ist im Highlight-Reel enthalten?",
-    a: "Eine cinematische Kurzfassung eures Tages mit den emotionalsten Momenten, geschnitten zu Musik. Das ist der Film, den ihr Familie und Freunden zeigt. Die Länge stimmen wir individuell ab. Auf Wunsch zusätzlich: Long-Form-Schnitt mit kompletten Reden und der Trauung in voller Länge.",
+    a: "Eine Kurzfassung eures Tages mit den emotionalsten Momenten, geschnitten zu Musik. Das ist der Film, den ihr Familie und Freunden zeigt. Die Länge stimmen wir individuell ab. Auf Wunsch zusätzlich: Long-Form-Schnitt mit kompletten Reden und der Trauung in voller Länge.",
   },
   {
     q: "Machst du auch Drohnenaufnahmen?",
-    a: "Ja. Im Tagesfilm- und Full-Day-Paket sind Drohnenaufnahmen inklusive, sofern Wetter und Genehmigungen es zulassen. Drohnen-Lizenz und Versicherung sind selbstverständlich vorhanden.",
+    a: "Ja. Im Tagesfilm- und Full-Day-Paket sind Drohnenaufnahmen inklusive, sofern Wetter und Genehmigungen es zulassen. Drohnenpilotenlizenz und Berufshaftpflicht sind selbstverständlich.",
   },
   {
     q: "Was passiert bei technischen Pannen?",
@@ -48,11 +48,11 @@ const faqs: FaqItem[] = [
   },
   {
     q: "Wie weit im Voraus sollten wir buchen?",
-    a: "Etwa 2 Monate vor der Hochzeit anzufragen ist ideal. Aber auch kurzfristige Anfragen sind oft möglich. Schreibt mir einfach, ich melde mich innerhalb von 48 Stunden zurück.",
+    a: "Für die Hauptsaison empfehle ich, 2 bis 3 Monate vorher anzufragen. Auch kurzfristige Anfragen sind oft möglich. Schreibt mir einfach, ich melde mich innerhalb von 48 Stunden zurück.",
   },
   {
     q: "Bekommen wir auch das Roh-Material?",
-    a: "Auf Wunsch ja. Gegen einen kleinen Aufpreis bekommt ihr alle Original-Aufnahmen auf einer externen Festplatte. Wird aber selten genutzt. Highlight-Reel und Long-Form decken meist alles ab, was Brautpaare später wirklich schauen.",
+    a: "Nein, das Roh-Material gebe ich nicht heraus. Damit könnt ihr ehrlich gesagt auch wenig anfangen: Es wird in speziellen Formaten für die Nachbearbeitung gefilmt und braucht professionelle Software, um überhaupt richtig dargestellt zu werden. Der fertige Film enthält alles Wichtige eures Tages.",
   },
 ];
 

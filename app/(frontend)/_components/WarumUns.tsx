@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 
 const generic1 = {
@@ -14,14 +15,14 @@ const generic1 = {
 };
 
 const us = {
-  title: ["Ein Filmer.", "Ein Stil, ein Versprechen."],
+  title: ["Ein Film.", "Eure Geschichte."],
   points: [
-    "Ein Filmer, eine klare Bildsprache",
-    "Cinematisch dokumentarisch",
+    "Eine klare Bildsprache",
+    "Echte Momente statt gestellter Posen",
     "3–4 Wochen Lieferzeit",
-    "Eigenes Highlight-Reel",
+    "Eigener Highlight-Film",
     "4K-Mitschnitt der Trauung",
-    "Drohnenaufnahmen optional",
+    "Drohnenaufnahmen inklusive",
     "Online-Film dauerhaft verfügbar",
     "Backup auf 2 Standorten · versichert",
   ],
@@ -85,26 +86,14 @@ export function WarumUns() {
           className="glass stage-center p-7 sm:p-9 order-1 lg:order-2"
         >
           <div className="flex items-center gap-3 mb-5">
-            <motion.div
-              initial={reduced ? false : { boxShadow: "0 0 0 rgba(216,193,145,0)" }}
-              whileInView={
-                reduced
-                  ? undefined
-                  : {
-                      boxShadow: [
-                        "0 0 0 rgba(216,193,145,0)",
-                        "0 0 32px rgba(216,193,145,0.7)",
-                        "0 0 12px rgba(216,193,145,0.3)",
-                      ],
-                    }
-              }
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 1.6, delay: 0.8 }}
-              className="w-9 h-9 rounded-full grid place-items-center font-serif italic text-paper"
-              style={{ background: "var(--color-accent)" }}
-            >
-              k
-            </motion.div>
+            <Image
+              src="/images/logo-icon.png"
+              alt=""
+              aria-hidden="true"
+              width={438}
+              height={288}
+              className="h-9 w-auto"
+            />
             <div className="font-mono text-[12px] tracking-[0.2em] uppercase text-paper">
               Kinemedia · Weddings
             </div>
