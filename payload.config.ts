@@ -9,6 +9,7 @@ import sharp from "sharp";
 import { Users } from "./collections/Users";
 import { Media } from "./collections/Media";
 import { ContactSubmissions } from "./collections/ContactSubmissions";
+import { migrations } from "./migrations";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -34,6 +35,11 @@ export default buildConfig({
     client: {
       url: process.env.DATABASE_URI || "file:./data/payload.db",
     },
+    migrationDir: path.resolve(dirname, "migrations"),
+    // Migrationen beim Produktions-Start automatisch ausführen —
+    // ohne das bleibt die SQLite-DB auf dem Server leer (Payload pusht
+    // das Schema nur im Dev-Modus) und jede DB-Operation schlägt fehl.
+    prodMigrations: migrations,
   }),
   sharp,
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL,

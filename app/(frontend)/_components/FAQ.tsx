@@ -24,7 +24,7 @@ type FaqItem = { q: string; a: string };
 const faqs: FaqItem[] = [
   {
     q: "Was kostet ein Hochzeitsfilm?",
-    a: "Meine drei Pakete starten bei 1.785 € brutto (1.500 € netto) für das Trauungs-Paket. Der Tagesfilm-Bestseller liegt bei 2.975 € brutto (2.500 € netto), die Full Day Reportage bei 4.641 € brutto (3.900 € netto). Alle Pakete enthalten Highlight-Film, 4K-Mitschnitt der Trauung und dauerhafter Online-Galerie. Individuelle Anpassungen jederzeit möglich.",
+    a: "Meine drei Pakete starten bei 1.785 € brutto (1.500 € netto) für das Trauungs-Paket. Der Tagesfilm-Bestseller liegt bei 2.975 € brutto (2.500 € netto), die Full Day Reportage bei 4.641 € brutto (3.900 € netto). Alle Pakete enthalten den Highlight-Film, den 4K-Mitschnitt der Trauung und die dauerhafte Online-Galerie. Individuelle Anpassungen sind jederzeit möglich.",
   },
   {
     q: "Wie lange dauert die Lieferung?",
@@ -40,15 +40,15 @@ const faqs: FaqItem[] = [
   },
   {
     q: "Machst du auch Drohnenaufnahmen?",
-    a: "Ja. Im Tagesfilm- und Full-Day-Paket sind Drohnenaufnahmen inklusive (wetter- und genehmigungsabhängig). Mavic 3 Cine, C2-Drohnenpiloten-Lizenz und Berufshaftpflicht sind selbstverständlich.",
+    a: "Ja. Im Tagesfilm- und Full-Day-Paket sind Drohnenaufnahmen inklusive, sofern Wetter und Genehmigungen es zulassen. Drohnen-Lizenz und Versicherung sind selbstverständlich vorhanden.",
   },
   {
     q: "Was passiert bei technischen Pannen?",
-    a: "Backup ist Pflicht: zwei Kamera-Bodies parallel im Einsatz, mehrere SD-Karten, automatisches Backup auf zwei externen Standorten noch am Hochzeitstag. Bei Krankheit habe ich ein Netzwerk befreundeter Filmer:innen, die einspringen können.",
+    a: "Ich arbeite mit doppelter Absicherung: Aufnahmen laufen parallel auf mehreren Speichern und werden noch am Hochzeitstag an zwei Orten gesichert. Bei Krankheit habe ich ein Netzwerk befreundeter Filmer, die einspringen können.",
   },
   {
     q: "Wie weit im Voraus sollten wir buchen?",
-    a: "Für Wunschtermine in der Hauptsaison (Mai–September) empfehle ich 12–18 Monate Vorlauf. Off-Season oder Wochentage sind oft auch noch 3–6 Monate vorher buchbar. Eine Anfrage lohnt sich immer.",
+    a: "Etwa 2 Monate vor der Hochzeit anzufragen ist ideal. Aber auch kurzfristige Anfragen sind oft möglich. Schreibt mir einfach, ich melde mich innerhalb von 48 Stunden zurück.",
   },
   {
     q: "Bekommen wir auch das Roh-Material?",
