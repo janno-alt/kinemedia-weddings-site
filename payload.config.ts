@@ -2,6 +2,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { sqliteAdapter } from "@payloadcms/db-sqlite";
+import { nodemailerAdapter } from "@payloadcms/email-nodemailer";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { buildConfig } from "payload";
 import sharp from "sharp";
@@ -13,6 +14,26 @@ import { migrations } from "./migrations";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
+
+// SMTP nur konfigurieren, wenn Zugangsdaten vorhanden sind (Production).
+// Ohne SMTP_HOST schreibt Payload Mails in die Server-Konsole (Dev-Fallback).
+const smtpConfigured = Boolean(process.env.SMTP_HOST && process.env.SMTP_USER);
+const email = smtpConfigured
+  ? nodemailerAdapter({
+      defaultFromAddress:
+        process.env.SMTP_FROM || "kontakt@wedding-kinemedia.de",
+      defaultFromName: "Kinemedia Weddings",
+      transportOptions: {
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT || 587),
+        secure: Number(process.env.SMTP_PORT) === 465,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      },
+    })
+  : undefined;
 
 export default buildConfig({
   admin: {
@@ -42,5 +63,6 @@ export default buildConfig({
     prodMigrations: migrations,
   }),
   sharp,
+  email,
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
 });

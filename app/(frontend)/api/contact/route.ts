@@ -62,6 +62,44 @@ export async function POST(req: Request) {
         status: "new",
       },
     });
+
+    // Benachrichtigung an den Postfach-Inhaber. Versand-Fehler dürfen die
+    // Anfrage nicht scheitern lassen — sie ist bereits gespeichert und im
+    // Admin unter Contact Submissions sichtbar.
+    const notifyTo =
+      process.env.CONTACT_NOTIFY_TO || "kontakt@wedding-kinemedia.de";
+    const packageLabels: Record<string, string> = {
+      trauung: "Trauung (4 Stunden)",
+      tagesfilm: "Tagesfilm (8 Stunden)",
+      fullday: "Full Day (12 Stunden)",
+      unsure: "Noch unsicher",
+    };
+    const lines = [
+      `Brautpaar: ${names}`,
+      `E-Mail: ${email}`,
+      phone ? `Telefon: ${phone}` : null,
+      weddingDate ? `Hochzeitsdatum: ${weddingDate}` : null,
+      location ? `Location: ${location}` : null,
+      packageInterest ? `Paket-Interesse: ${packageLabels[packageInterest] ?? packageInterest}` : null,
+      "",
+      "Nachricht:",
+      message || "(keine Nachricht)",
+      "",
+      "—",
+      "Alle Anfragen: https://wedding-kinemedia.de/admin/collections/contact-submissions",
+    ].filter((l) => l !== null);
+
+    try {
+      await payload.sendEmail({
+        to: notifyTo,
+        replyTo: email,
+        subject: `Neue Hochzeitsfilm-Anfrage: ${names}`,
+        text: lines.join("\n"),
+      });
+    } catch (mailErr) {
+      console.error("[contact] notification mail failed:", mailErr);
+    }
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[contact] create failed:", err);
