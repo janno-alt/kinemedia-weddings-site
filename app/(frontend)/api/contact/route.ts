@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getPayload } from "payload";
 import config from "@payload-config";
+import { logToFile } from "@/lib/log";
 
 /**
  * Public Endpoint für das Kontaktformular auf /kontakt.
@@ -90,19 +91,24 @@ export async function POST(req: Request) {
     ].filter((l) => l !== null);
 
     try {
+      await logToFile(
+        "contact",
+        `Anfrage gespeichert: ${names}. SMTP konfiguriert: ${Boolean(process.env.SMTP_HOST && process.env.SMTP_USER)} (Host: ${process.env.SMTP_HOST || "-"}). Sende an ${notifyTo} …`,
+      );
       await payload.sendEmail({
         to: notifyTo,
         replyTo: email,
         subject: `Neue Hochzeitsfilm-Anfrage: ${names}`,
         text: lines.join("\n"),
       });
+      await logToFile("contact", `Benachrichtigung an ${notifyTo} gesendet.`);
     } catch (mailErr) {
-      console.error("[contact] notification mail failed:", mailErr);
+      await logToFile("contact", "Mail-Versand fehlgeschlagen:", mailErr as Error);
     }
 
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error("[contact] create failed:", err);
+    await logToFile("contact", "Speichern fehlgeschlagen:", err as Error);
     return NextResponse.json(
       { error: "Anfrage konnte nicht gespeichert werden. Bitte später erneut versuchen." },
       { status: 500 },
