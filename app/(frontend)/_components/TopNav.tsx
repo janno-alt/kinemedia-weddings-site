@@ -23,7 +23,7 @@ export function TopNav() {
             width={1983}
             height={288}
             priority
-            className="h-8 sm:h-10 w-auto"
+            className="h-6 sm:h-10 w-auto"
           />
         </Link>
 

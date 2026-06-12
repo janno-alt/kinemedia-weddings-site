@@ -112,23 +112,36 @@ export function ScrollVideoStory({
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  // iOS-Unlock: Safari erlaubt programmatische Frame-Kontrolle (currentTime)
-  // erst nach einer User-Geste. Erster Touch → play() + sofort pause()
-  // schaltet das Video frei, ohne dass es sichtbar abspielt.
+  // iOS-Unlock: Safari lädt Videos trotz preload="auto" erst nach einer
+  // User-Geste und erlaubt erst dann programmatische Frame-Kontrolle
+  // (currentTime). Erster Touch → play() + pause() schaltet beides frei.
+  //
+  // Wichtig: erst registrieren, wenn die Mobile-Detection fertig ist —
+  // der Quellen-Wechsel ersetzt das Video-Element (key-Change), ein
+  // vorher geunlocktes Element wäre verloren. Retry-fähig, falls play()
+  // beim ersten Versuch abgelehnt wird.
   useEffect(() => {
-    if (reduced) return;
+    if (reduced || isMobile === null) return;
+    let unlocked = false;
     const unlock = () => {
+      if (unlocked) return;
       const video = videoRef.current;
       if (!video) return;
+      unlocked = true;
       video
         .play()
         .then(() => video.pause())
-        .catch(() => {});
-      window.removeEventListener("touchstart", unlock);
+        .catch(() => {
+          unlocked = false; // nächster Touch versucht es erneut
+        });
     };
-    window.addEventListener("touchstart", unlock, { passive: true, once: true });
-    return () => window.removeEventListener("touchstart", unlock);
-  }, [reduced]);
+    window.addEventListener("touchstart", unlock, { passive: true });
+    window.addEventListener("touchend", unlock, { passive: true });
+    return () => {
+      window.removeEventListener("touchstart", unlock);
+      window.removeEventListener("touchend", unlock);
+    };
+  }, [reduced, isMobile]);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -324,8 +337,9 @@ export function ScrollVideoStory({
           </div>
         </motion.div>
 
-        {/* KAPITEL-OVERLAY — erscheinen ab Akt 1, synchron zum Scroll */}
-        <div className="absolute inset-0 z-10 flex flex-col justify-end pb-16 sm:pb-24 px-4 sm:px-8 pointer-events-none">
+        {/* KAPITEL-OVERLAY — erscheinen ab Akt 1, synchron zum Scroll.
+            Mobile: deutlich höher platziert (pb-36), Desktop wie gehabt. */}
+        <div className="absolute inset-0 z-10 flex flex-col justify-end pb-36 sm:pb-24 px-4 sm:px-8 pointer-events-none">
           <div className="relative h-[230px] sm:h-[260px] max-w-[860px] mx-auto w-full text-center">
             {chapters.map((c, i) => (
               <ChapterText
